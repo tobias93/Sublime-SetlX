@@ -1,0 +1,4 @@
+{
+	"cmd": ["setlx", "$file"],
+	"selector": "source.stlx"
+}

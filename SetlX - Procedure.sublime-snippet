@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+procedure(${1:a, b}) {
+	${2}
+};
+]]></content>
+	<tabTrigger>procedure</tabTrigger>
+	<description>procedure</description>
+	<scope>source.stlx</scope>
+</snippet>

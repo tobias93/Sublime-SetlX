@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+${1:a} := procedure(${2:b, c}) {
+	${3}
+};
+]]></content>
+	<tabTrigger>nprocedure</tabTrigger>
+	<description>new procedure</description>
+	<scope>source.stlx</scope>
+</snippet>

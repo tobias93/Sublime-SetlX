@@ -1,0 +1,253 @@
+%YAML 1.2
+---
+# http://www.sublimetext.com/docs/3/syntax.html
+name: SetlX
+file_extensions: [stlx]
+first_line_match: ^#!\s*/.*\b(setlx|setlX|SetlX)$\n?
+scope: source.stlx
+
+variables:
+  varname: "[a-zA-Z0-9_]+"
+
+contexts:
+
+  main:
+    - match: \}
+      scope: invalid.illegal.curly-bracket-end.stlx
+    - match: \)
+      scope: invalid.illegal.round-bracket-end.stlx
+    - match: \]
+      scope: invalid.illegal.square-bracket-end.stlx
+    - include: classes
+    - include: statements
+    - include: curly_brackets
+    - include: round_brackets
+    - include: square_brackets
+    - match: =
+      scope: invalid.illegal.wrong-eq.stlx
+
+  curly_brackets:
+    - match: \{
+      scope: punctuation.section.braces.begin.stlx
+      push: curly_bracket
+
+  curly_bracket:
+    - meta_content_scope: meta.braces
+    - match: \}
+      scope: punctuation.section.braces.end.stlx
+      pop: true 
+    - include: main
+
+  round_brackets:
+    - match: \(
+      scope: punctuation.section.braces.begin.stlx
+      push: 
+        - meta_content_scope: meta.braces
+        - match: \)
+          scope: punctuation.section.braces.end.stlx
+          pop: true 
+        - include: main
+
+  square_brackets:
+    - match: \[
+      scope: punctuation.section.braces.begin.stlx
+      push: 
+        - meta_content_scope: meta.braces
+        - match: \]
+          scope: punctuation.section.braces.end.stlx
+          pop: true 
+        - include: main
+
+  statements:
+    - include: comments
+    - include: control_structures
+    - include: procedure_declarations
+    - include: assignments
+    - include: expressions
+    - match: ;
+      scope: punctuation.terminator.stlx
+
+  expressions:
+    - include: numbers
+    - include: vectors
+    - include: procedures
+    - include: strings
+    - include: constants
+    - include: operators
+    - include: procedure_invocations
+    - include: variables
+
+  strings:
+    - match: '"'
+      push: 
+        - meta_scope: string.quoted.double.stlx
+        - match: '\$"'
+          pop: true
+        - match: '\$'
+          push:
+            - clear_scopes: 1
+            - include: expression
+            - match: '\$'
+              pop: true
+            - match: '.(?=")'
+              pop: true
+        - match: \\.
+          scope: constant.character.escape.stlx
+        - match: '"'
+          pop: true
+    - match: "'"
+      push: 
+        - meta_scope: string.quoted.single.stlx
+        - include: string_content
+        - match: "'"
+          pop: true
+
+  numbers:
+    - match: (0|-?[1-9][0-9]*)|(-?(0?|[1-9][0-9]*)?(\.[0-9]+))
+      scope: constant.numeric.stlx
+
+  vectors:
+    - match: \<\<
+      scope: punctuation.section.braces.begin.stlx
+      push:
+        - match: \>\>
+          scope: punctuation.section.braces.end.stlx
+          pop: true
+        - match: ','
+          scope: punctuation.separator.stlx
+        - include: comments
+        - include: expressions
+
+  constants:
+    - match: om
+      scope: constant.language.om.stlx
+    - match: 'true'
+      scope: constant.language.true.stlx
+    - match: 'false'
+      scope: constant.language.false.stlx
+
+  procedure_invocations:
+    - match: '(@?{{varname}})(?=\s*\()'
+      scope: variable.function.stlx
+
+  variables:
+    - match: '{{varname}}'
+      scope: variable.other.stlx
+
+  procedure_declarations:
+    - match: ({{varname}})(?=\s*:=\s*(cachedProcedure|procedure|closure|[a-zA-Z0-9_,\[\] ]*\|(\-|\=)\>))
+      scope: entity.name.function.stlx
+      captures:     # dirty hack to add multiple scopes to the match
+        1: variable.other.stlx
+
+  assignments:
+    - match: (\:=)|(\-=)|(\+=)|(\*=)|(\/=)|(\\=)|(\%=)
+      scope: keyword.operator.assignment.stlx
+
+  operators:
+    - match: '\>\<|\#|\+/|\*/'
+      scope: keyword.operator.other
+    - match: \+|\-|\*|\/|\\|%|\*\*
+      scope: keyword.operator.arithmetic.stlx
+    - match: ==|!=|<=|<|>=|>|\|\||&&|!|=>|<==>|<!=>
+      scope: keyword.operator.logical.stlx
+    - match: in(?>[^0-9a-zA-Z_])
+      scope: keyword.operator.word
+    - match: '\.\.'
+      scope: keyword.operator.other.range.stlx
+    - match: ',|:|\|'
+      scope: punctuation.seperator.set.stlx
+    
+  procedures:
+    - match: (procedure|cachedProcedure|closure)\s*\(
+      captures: 
+        1: keyword.other.method.stlx
+      push:
+        - include: procedure_parameters
+        - match: \)
+          pop: true
+    - match: '({{varname}})\s*(\|(\-|\=)\>)'
+      captures:
+        1: variable.parameter.function.stlx
+        2: keyword.other.method.stlx
+    - match: '\[(?=[^\]]*\]\s*\|(\-|\=)\>)'
+      push:
+        - include: procedure_parameters
+        - match: '\]'
+          pop: true
+    - match: procedure|cachedProcedure|closure
+      scope: keyword.other.method.stlx
+    - match: \|\-\>|\|\=\>
+      scope: keyword.other.method.stlx
+    - match: return
+      scope: keyword.other.return.stlx
+
+  procedure_parameters:
+    - match: '{{varname}}'
+      scope: variable.parameter.function.stlx
+    - match: ','
+      scope: punctuation.separator.stlx
+    - include: comments
+
+  procedure_bodies:
+    - match: \{
+      scope: punctuation.section.braces.begin.stlx
+      set: curly_bracket
+
+  comments:
+    - match: /\*
+      scope: punctuation.definition.comment.begin.stlx
+      push:
+        - meta_scope: comment.block.stlx
+        - match: \*/
+          scope: punctuation.definition.comment.end.stlx
+          pop: true
+    - match: //
+      scope: punctuation.definition.comment.stlx
+      push:
+        - meta_scope: comment.line.stlx
+        - match: $\n?
+          pop: true
+
+  control_structures:
+    - match: if|else
+      scope: keyword.control.conditional.stlx
+    - match: switch
+      scope: keyword.control.conditional.switch.stlx
+    - match: match
+      scope: keyword.control.conditional.match.stlx
+    - match: scan
+      scope: keyword.control.conditional.match.stlx
+    - match: case
+      scope: keyword.control.conditional.switch.case.stlx
+    - match: regex
+      scope: keyword.control.conditional.switch.case.stlx
+    - match: default
+      scope: keyword.control.conditional.switch.default.stlx
+    - match: while 
+      scope: keyword.control.loop.while.stlx
+    - match: do 
+      scope: keyword.control.loop.dowhile.stlx
+    - match: for 
+      scope: keyword.control.loop.for.stlx
+    - match: try 
+      scope: keyword.control.exceptions.try.stlx
+    - match: catch 
+      scope: keyword.control.exceptions.catch.stlx
+    - match: check 
+      scope: keyword.control.backtracking.check.stlx
+    - match: backtrack 
+      scope: keyword.control.backtracking.backtrack.stlx
+
+  classes:
+    - match: '(class)\s*({{varname}})?\s*\(?'
+      captures:
+        1: storage.type.stlx
+        2: entity.name.class.stlx
+      push:
+        - include: procedure_parameters
+        - match: \)
+          pop: true
+    - match: static 
+      scope: storage.modifier.stlx
+      
