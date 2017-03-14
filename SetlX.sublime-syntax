@@ -119,11 +119,11 @@ contexts:
         - include: expressions
 
   constants:
-    - match: om
+    - match: 'om(?=[^0-9a-zA-Z_])'
       scope: constant.language.om.stlx
-    - match: 'true'
+    - match: 'true(?=[^0-9a-zA-Z_])'
       scope: constant.language.true.stlx
-    - match: 'false'
+    - match: 'false(?=[^0-9a-zA-Z_])'
       scope: constant.language.false.stlx
 
   procedure_invocations:
@@ -151,7 +151,7 @@ contexts:
       scope: keyword.operator.arithmetic.stlx
     - match: ==|!=|<=|<|>=|>|\|\||&&|!|=>|<==>|<!=>
       scope: keyword.operator.logical.stlx
-    - match: in(?>[^0-9a-zA-Z_])
+    - match: in(?=[^0-9a-zA-Z_])
       scope: keyword.operator.word
     - match: '\.\.'
       scope: keyword.operator.other.range.stlx
@@ -210,33 +210,33 @@ contexts:
           pop: true
 
   control_structures:
-    - match: if|else
+    - match: (if|else)(?=[^0-9a-zA-Z_])
       scope: keyword.control.conditional.stlx
-    - match: switch
+    - match: switch(?=[^0-9a-zA-Z_])
       scope: keyword.control.conditional.switch.stlx
-    - match: match
+    - match: match(?=[^0-9a-zA-Z_])
       scope: keyword.control.conditional.match.stlx
-    - match: scan
+    - match: scan(?=[^0-9a-zA-Z_])
       scope: keyword.control.conditional.match.stlx
-    - match: case
+    - match: case(?=[^0-9a-zA-Z_])
       scope: keyword.control.conditional.switch.case.stlx
-    - match: regex
+    - match: regex(?=[^0-9a-zA-Z_])
       scope: keyword.control.conditional.switch.case.stlx
-    - match: default
+    - match: default(?=[^0-9a-zA-Z_])
       scope: keyword.control.conditional.switch.default.stlx
-    - match: while 
+    - match: while(?=[^0-9a-zA-Z_]) 
       scope: keyword.control.loop.while.stlx
-    - match: do 
+    - match: do(?=[^0-9a-zA-Z_]) 
       scope: keyword.control.loop.dowhile.stlx
-    - match: for 
+    - match: for(?=[^0-9a-zA-Z_]) 
       scope: keyword.control.loop.for.stlx
-    - match: try 
+    - match: try(?=[^0-9a-zA-Z_]) 
       scope: keyword.control.exceptions.try.stlx
-    - match: catch 
+    - match: catch(?=[^0-9a-zA-Z_]) 
       scope: keyword.control.exceptions.catch.stlx
-    - match: check 
+    - match: check(?=[^0-9a-zA-Z_]) 
       scope: keyword.control.backtracking.check.stlx
-    - match: backtrack 
+    - match: backtrack(?=[^0-9a-zA-Z_]) 
       scope: keyword.control.backtracking.backtrack.stlx
 
   classes:
@@ -248,6 +248,6 @@ contexts:
         - include: procedure_parameters
         - match: \)
           pop: true
-    - match: static 
+    - match: static(?=[^0-9a-zA-Z_]) 
       scope: storage.modifier.stlx
       
